@@ -10,7 +10,6 @@ export interface ICriterion {
 
 export interface IIndicator {
   text: string;
-  type: IndicatorType;
   criteries: ICriterion[];
 }
 
