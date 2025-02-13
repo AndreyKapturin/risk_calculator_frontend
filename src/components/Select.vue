@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IIndicator } from '../../types';
+import type { ITypedIndicator } from '../../types';
 
 const props = defineProps<{
-  indicator: IIndicator;
+  indicator: ITypedIndicator;
   index: number;
 }>()
 const selectName = props.indicator.type + '-' + props.index;

@@ -1,4 +1,4 @@
-import { IndicatorType, type ICriterion, type IIndicator, type IObjectOfControl } from './types';
+import { IndicatorType, type ITypedIndicator, type ICriterion, type IIndicator, type IObjectOfControl } from './types';
 
 class Criterion implements ICriterion {
   text: string = '';
@@ -20,7 +20,7 @@ class Indicator implements IIndicator {
   }
 }
 
-class RiskIndicator extends Indicator {
+class RiskIndicator extends Indicator implements ITypedIndicator {
   type: IndicatorType = IndicatorType.RiskIndicator;
 
   constructor(text: string, criteries: Criterion[] = []) {
@@ -28,7 +28,7 @@ class RiskIndicator extends Indicator {
   }
 }
 
-class GoodFaithCriterion extends Indicator {
+class GoodFaithCriterion extends Indicator implements ITypedIndicator {
   type: IndicatorType = IndicatorType.GoodFaithCriterion;
 
   constructor(text: string, criteries: Criterion[] = []) {
@@ -39,10 +39,10 @@ class GoodFaithCriterion extends Indicator {
 class ObjectOfControl implements IObjectOfControl {
   name: string;
   slug: string;
-  indicators: Indicator[];
+  indicators: ITypedIndicator[];
   potentialNegativeConsequencesIndex: number;
 
-  constructor(name: string, potentialNegativeConsequencesIndex: number, indicators: Indicator[] = []) {
+  constructor(name: string, potentialNegativeConsequencesIndex: number, indicators: ITypedIndicator[] = []) {
     this.name = name;
     this.slug = name.replace(/\s+/g, '-');
     this.indicators = indicators;

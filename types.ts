@@ -13,6 +13,10 @@ export interface IIndicator {
   criteries: ICriterion[];
 }
 
+export interface ITypedIndicator extends IIndicator {
+  type: IndicatorType;
+}
+
 export interface IObjectOfControl {
   name: string;
   slug: string;
