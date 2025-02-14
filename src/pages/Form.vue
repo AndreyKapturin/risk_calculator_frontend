@@ -22,9 +22,12 @@
     const total = {
       totalRiskIndicator: 0,
       totalGoodFaithCriteries: 0,
+      individualizationIndex: 0,
     };
 
     const formData = new FormData(event.target);
+    console.log(Object.fromEntries(formData));
+    
     
     for (const [key, value] of formData) {
       if (key.startsWith(IndicatorType.RiskIndicator)) {
@@ -34,8 +37,10 @@
         total.totalGoodFaithCriteries += Number(value);
       }
     }
-
+    total.individualizationIndex = total.totalGoodFaithCriteries + total.totalRiskIndicator;
     result.value = total;
+    console.log(objectOfControls);
+    console.log(result);
   }
 
 </script>
@@ -67,7 +72,8 @@
       <p>∑ Iкрд = {{ result.totalGoodFaithCriteries }}</p>
       <p>∑ Iрпв = {{ result.totalRiskIndicator }}</p>
       <p>Uинд =∑ Iрпв+∑ Iкрд= {{result.totalGoodFaithCriteries + result.totalRiskIndicator }}</p>
-      <p>Кг.т.инд.= Uинд+Кгт = {{objectOfControls?.potentialNegativeConsequencesIndex + result.totalRiskIndicator }}</p>
+      <p>Кг.т.инд.= Uинд+Кгт = {{objectOfControls?.potentialNegativeConsequencesIndex + result.individualizationIndex }}</p>
+      <p>Категория риска объекта = </p>
     </article>
   </section>
 </template>

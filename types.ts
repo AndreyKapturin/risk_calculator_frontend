@@ -27,4 +27,5 @@ export interface IObjectOfControl {
 export interface IResult {
   totalRiskIndicator: number;
   totalGoodFaithCriteries: number;
+  individualizationIndex: number;
 }

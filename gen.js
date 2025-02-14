@@ -1,15 +1,35 @@
 import { readFile, writeFile  } from "node:fs/promises";
 
-let text = await readFile('template.js', { encoding: 'utf8' })
+let template = await readFile('template.js', { encoding: 'utf8' })
 
-const str = '0!1!3!0!2!4!4!0!0!3!5!7!8!10!40!0!20!0!10!0!-15!0!0!-3!-5!5!0!2!0!5!0!10!0!15!0!6!0!2!0!-10!0!3!0!3!0!5!0!-5!0!20!0!30!0!20!0!5!0!10!0!10!0!10!0!-10!0!-10!0';
-const values = str.split('!');
+const str = '';
 
-values.forEach((v, i) => {
-  let regExp = new RegExp(`\\{\\{${i + 1}\\}\\}`);
-  text = text.replace(regExp, v)
-})
 
-let filename = 'Объекты социальной защиты';
+function generateObject(template, objectString) {
+  const [header, values] = objectString.split('!!');
+  const [name, indicator] = header.split('!');
+  const valuesArray = values.split('!');
 
-await writeFile(filename + '.js', text);
+  template = template.replace(/\{\{name\}\}/, `'${name}'`);
+  template = template.replace(/\{\{indicator\}\}/, indicator.replace(',', '.'));
+
+  valuesArray.forEach((v, i) => {
+    let regExp = new RegExp(`\\{\\{${i + 1}\\}\\}`);
+    let value = v === '-' ? 0 : v;
+    template = template.replace(regExp, value)
+  })
+
+  return template;
+}
+
+function generateAllObjects(template, allObjectsString) {
+  const objectsStringsArray = allObjectsString.split('!!!');
+  const result = objectsStringsArray.map(o => generateObject(template, o));
+  return result.join(',\n');
+}
+
+let all = generateAllObjects(template, str);
+
+await writeFile('res' + '.js', all);
+
+console.log('success')
