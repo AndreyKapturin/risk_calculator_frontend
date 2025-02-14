@@ -1,4 +1,4 @@
-import { IndicatorType, type ITypedIndicator, type ICriterion, type IIndicator, type IObjectOfControl } from './types';
+import { IndicatorType, type ITypedIndicator, type ICriterion, type IIndicator, type IObjectOfControl, RiskCategory } from './types';
 
 class Criterion implements ICriterion {
   text: string = '';
@@ -51,6 +51,31 @@ class ObjectOfControl implements IObjectOfControl {
   
   public get href() : string {
     return '/forms/' + this.slug;
+  }
+}
+
+export class Result {
+  totalRiskIndicator: number;
+  totalGoodFaithCriteries: number;
+  individualizationIndex: number;
+  potentialNegativeConsequencesIndexWithIndividualizationIndex: number;
+  riskCategory: RiskCategory;
+
+  constructor(totalRiskIndicator: number, totalGoodFaithCriteries: number, potentialNegativeConsequencesIndex: number) {
+    this.totalRiskIndicator = totalRiskIndicator;
+    this.totalGoodFaithCriteries = totalGoodFaithCriteries;
+    this.individualizationIndex = totalRiskIndicator + totalGoodFaithCriteries;
+    this.potentialNegativeConsequencesIndexWithIndividualizationIndex = this.individualizationIndex + potentialNegativeConsequencesIndex;
+    this.riskCategory = this.getRiskCategory(this.potentialNegativeConsequencesIndexWithIndividualizationIndex);
+  }
+
+  private getRiskCategory = (index: number) => {
+    if (index >= 100) return RiskCategory.ExtremelyHigh;
+    if (index >= 45) return RiskCategory.High;
+    if (index >= 20) return RiskCategory.Significant;
+    if (index >= 9) return RiskCategory.Average;
+    if (index >= 4) return RiskCategory.Moderate;
+    return RiskCategory.Low;
   }
 }
 

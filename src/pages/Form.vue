@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { getObjectsOfControlBySlug } from '../../DAL';
+  import { getObjectsOfControlBySlug, Result } from '../../DAL';
   import { useRoute } from 'vue-router'
   import Select from '../components/Select.vue';
-  import { IndicatorType, type IResult } from '../../types';
+  import { IndicatorType } from '../../types';
   import { ref } from 'vue';
 
   const route = useRoute();
@@ -10,37 +10,30 @@
   const objectOfControls = getObjectsOfControlBySlug(slug);
   const riskIndicators = objectOfControls?.indicators.filter(i => i.type === IndicatorType.RiskIndicator);
   const goodFaithCriteries = objectOfControls?.indicators.filter(i => i.type === IndicatorType.GoodFaithCriterion);
-  const result = ref<IResult|null>(null);
+  const result = ref<Result|null>(null);
 
   const handleSubmit = (event: Event) => {
     event.preventDefault();
-
+    if (!objectOfControls) return;
     if (!(event.target instanceof HTMLFormElement)) {
       throw new Error('Неверный целевой элемент');
     }
 
-    const total = {
-      totalRiskIndicator: 0,
-      totalGoodFaithCriteries: 0,
-      individualizationIndex: 0,
-    };
+    let totalRiskIndicator = 0;
+    let totalGoodFaithCriteries = 0;
 
     const formData = new FormData(event.target);
-    console.log(Object.fromEntries(formData));
-    
     
     for (const [key, value] of formData) {
       if (key.startsWith(IndicatorType.RiskIndicator)) {
-        total.totalRiskIndicator += Number(value);
+        totalRiskIndicator += Number(value);
       }
       if (key.startsWith(IndicatorType.GoodFaithCriterion)) {
-        total.totalGoodFaithCriteries += Number(value);
+        totalGoodFaithCriteries += Number(value);
       }
     }
-    total.individualizationIndex = total.totalGoodFaithCriteries + total.totalRiskIndicator;
-    result.value = total;
-    console.log(objectOfControls);
-    console.log(result);
+    
+    result.value = new Result(totalRiskIndicator, totalGoodFaithCriteries, objectOfControls.potentialNegativeConsequencesIndex);
   }
 
 </script>
@@ -71,9 +64,9 @@
       <h2>Результаты:</h2>
       <p>∑ Iкрд = {{ result.totalGoodFaithCriteries }}</p>
       <p>∑ Iрпв = {{ result.totalRiskIndicator }}</p>
-      <p>Uинд =∑ Iрпв+∑ Iкрд= {{result.totalGoodFaithCriteries + result.totalRiskIndicator }}</p>
-      <p>Кг.т.инд.= Uинд+Кгт = {{objectOfControls?.potentialNegativeConsequencesIndex + result.individualizationIndex }}</p>
-      <p>Категория риска объекта = </p>
+      <p>Uинд =∑ Iрпв+∑ Iкрд= {{result.individualizationIndex }}</p>
+      <p>Кг.т.инд.= Uинд+Кгт = {{ result.potentialNegativeConsequencesIndexWithIndividualizationIndex}}</p>
+      <p>Категория риска объекта = {{ result.riskCategory }}</p>
     </article>
   </section>
 </template>

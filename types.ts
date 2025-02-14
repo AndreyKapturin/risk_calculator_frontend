@@ -3,6 +3,15 @@ export enum IndicatorType {
   GoodFaithCriterion = 'goodFaithCriterion',
 };
 
+export enum RiskCategory {
+  ExtremelyHigh = 'Чрезвычайно высокий',
+  High = 'Высокий',
+  Significant = 'Значительный',
+  Average = 'Средний',
+  Moderate = 'Умеренный',
+  Low = 'Низкий',
+};
+
 export interface ICriterion {
   text: string;
   value: number | null;
