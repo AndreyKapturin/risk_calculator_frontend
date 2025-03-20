@@ -1,20 +1,34 @@
 <script setup lang="ts">
-  import { getObjectsOfControlBySlug, Result } from '../../DAL';
   import { useRoute } from 'vue-router'
   import Select from '../components/Select.vue';
-  import { IndicatorType } from '../../types';
-  import { ref } from 'vue';
+  import { MetricType, RiskCategory, type IObjectsGroup, type IResult } from '../../types';
+  import { computed, ref } from 'vue';
+  import { useLoadData } from '../hooks/useLoadData';
+  import { getObjectsGroupById } from '../api';
+  import Loading from '../components/Loading.vue';
+
+  const getRiskCategory = (index: number) => {
+    if (index >= 100) return RiskCategory.ExtremelyHigh;
+    if (index >= 45) return RiskCategory.High;
+    if (index >= 20) return RiskCategory.Significant;
+    if (index >= 9) return RiskCategory.Average;
+    if (index >= 4) return RiskCategory.Moderate;
+    return RiskCategory.Low;
+  }
 
   const route = useRoute();
-  const slug = Array.isArray(route.params.slug) ? route.params.slug[0] : route.params.slug;
-  const objectOfControls = getObjectsOfControlBySlug(slug);
-  const riskIndicators = objectOfControls?.indicators.filter(i => i.type === IndicatorType.RiskIndicator);
-  const goodFaithCriteries = objectOfControls?.indicators.filter(i => i.type === IndicatorType.GoodFaithCriterion);
-  const result = ref<Result|null>(null);
+  const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
+  const { data: objectsGroup, isLoading, error } = useLoadData<IObjectsGroup>(() => getObjectsGroupById(id));
 
+  const riskIndicators = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === MetricType.RiskIndicator));
+  const goodFaithCriteries = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === MetricType.GoodFaithCriterion));
+  const result = ref<IResult|null>(null);
+
+  
   const handleSubmit = (event: Event) => {
     event.preventDefault();
-    if (!objectOfControls) return;
+
+    // для соблюдения типов
     if (!(event.target instanceof HTMLFormElement)) {
       throw new Error('Неверный целевой элемент');
     }
@@ -25,36 +39,50 @@
     const formData = new FormData(event.target);
     
     for (const [key, value] of formData) {
-      if (key.startsWith(IndicatorType.RiskIndicator)) {
+      if (key.startsWith(MetricType.RiskIndicator)) {
         totalRiskIndicator += Number(value);
       }
-      if (key.startsWith(IndicatorType.GoodFaithCriterion)) {
+      if (key.startsWith(MetricType.GoodFaithCriterion)) {
         totalGoodFaithCriteries += Number(value);
       }
     }
+
+    const individualizationIndex = totalRiskIndicator + totalGoodFaithCriteries
+    const individualizedPotentialDamageIndex = individualizationIndex + (objectsGroup?.value?.socialDamagePotencialScore ?? 0);
+    const riskCategory = getRiskCategory(individualizedPotentialDamageIndex)
     
-    result.value = new Result(totalRiskIndicator, totalGoodFaithCriteries, objectOfControls.potentialNegativeConsequencesIndex);
+    result.value = {
+      totalRiskIndicator,
+      totalGoodFaithCriteries,
+      individualizationIndex,
+      individualizedPotentialDamageIndex,
+      riskCategory
+    }
   }
 
 </script>
 
 <template>
-  <section>
-    <h1>{{ objectOfControls?.name }}</h1>
+  <Loading v-if="isLoading" />
+  <div v-else-if="error">
+    <p>Ошибка при загрузке данных. Попробуйте позже</p>
+  </div>
+  <section v-else>
+    <h1></h1>
     <form @submit="handleSubmit" class="indicators-form">
       <fieldset>
         <legend>Индикаторы риска</legend>
         <Select
           v-for="(indicator, index) in riskIndicators"
-          :indicator="indicator"
+          :metric="indicator"
           :index="index"
         />
       </fieldset>
       <fieldset>
         <legend>Критерии добросовестности</legend>
         <Select
-          v-for="(indicator, index) in goodFaithCriteries"
-          :indicator="indicator"
+          v-for="(criteria, index) in goodFaithCriteries"
+          :metric="criteria"
           :index="index"
         />
       </fieldset>
@@ -65,13 +93,13 @@
       <p>∑ Iкрд = {{ result.totalGoodFaithCriteries }}</p>
       <p>∑ Iрпв = {{ result.totalRiskIndicator }}</p>
       <p>Uинд =∑ Iрпв+∑ Iкрд= {{result.individualizationIndex }}</p>
-      <p>Кг.т.инд.= Uинд+Кгт = {{ result.potentialNegativeConsequencesIndexWithIndividualizationIndex}}</p>
+      <p>Кг.т.инд.= Uинд+Кгт = {{ result.individualizedPotentialDamageIndex}}</p>
       <p>Категория риска объекта = {{ result.riskCategory }}</p>
     </article>
   </section>
 </template>
 
-<style>
+<style scoped>
   .indicators-form {
     display: flex;
     flex-direction: column;
