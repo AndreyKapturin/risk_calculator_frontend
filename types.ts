@@ -1,7 +1,29 @@
-export enum IndicatorType {
-  RiskIndicator = 'riskIndicator',
-  GoodFaithCriterion = 'goodFaithCriterion',
+export enum MetricType {
+  RiskIndicator = 'risk indicator',
+  GoodFaithCriterion = 'good faith criteria',
 };
+
+export interface IObjectsGroupForList {
+  id: number;
+  name: string;
+}
+
+export interface IObjectsGroup extends IObjectsGroupForList {
+  socialDamagePotencialScore: number;
+  materialDamagePotencialScore: number;
+  metrics: IMetric[];
+}
+
+export interface IMetric {
+  name: string;
+  type: MetricType,
+  indicators: IIndicator[];
+}
+
+export interface IIndicator{
+  text: string;
+  value: number | null;
+}
 
 export enum RiskCategory {
   ExtremelyHigh = 'Чрезвычайно высокий',
@@ -12,29 +34,10 @@ export enum RiskCategory {
   Low = 'Низкий',
 };
 
-export interface ICriterion {
-  text: string;
-  value: number | null;
-}
-
-export interface IIndicator {
-  text: string;
-  criteries: ICriterion[];
-}
-
-export interface ITypedIndicator extends IIndicator {
-  type: IndicatorType;
-}
-
-export interface IObjectOfControl {
-  name: string;
-  slug: string;
-  indicators: IIndicator[];
-  href: string;
-}
-
 export interface IResult {
   totalRiskIndicator: number;
   totalGoodFaithCriteries: number;
   individualizationIndex: number;
+  individualizedPotentialDamageIndex: number;
+  riskCategory: RiskCategory;
 }
