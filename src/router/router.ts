@@ -5,7 +5,7 @@ import Result from '../pages/Result.vue';
 
 const routes = [
   { path: '/', component: Main },
-  { path: '/forms/:slug', component: Form },
+  { path: '/objects-groups/:id', component: Form },
   { path: '/result', component: Result },
 ]
 

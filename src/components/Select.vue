@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import type { ITypedIndicator } from '../../types';
+import type { IMetric } from '../../types';
 
 const props = defineProps<{
-  indicator: ITypedIndicator;
+  metric: IMetric;
   index: number;
 }>()
-const selectName = props.indicator.type + '-' + props.index;
+const selectName = props.metric.type + '-' + props.index;
 </script>
 
 <template>
   <label>
-    {{ indicator.text }}
+    {{ metric.name }}
     <select :name="selectName">
       <option
-        v-for="criterion in indicator.criteries"
-        :value="criterion.value">
-        {{ criterion.text }}
+        v-for="indicator in metric.indicators"
+        :value="indicator.value">
+        {{ indicator.text }}
       </option>
     </select>
   </label>
 </template>
 
-<style>
+<style scoped>
   label {
     display: flex;
     flex-direction: column;
