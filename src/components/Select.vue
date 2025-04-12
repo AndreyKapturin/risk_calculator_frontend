@@ -11,7 +11,7 @@ const selectName = props.metric.type + '-' + props.index;
 <template>
   <label>
     {{ metric.name }}
-    <select :name="selectName">
+    <select :name="selectName" class="select">
       <option
         v-for="indicator in metric.indicators"
         :value="indicator.value">
@@ -22,6 +22,13 @@ const selectName = props.metric.type + '-' + props.index;
 </template>
 
 <style scoped>
+  .select {
+    border-radius: var(--border-radius);
+    padding: 5px 10px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
   label {
     display: flex;
     flex-direction: column;

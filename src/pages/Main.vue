@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import ObjectsCategoryGrid from '../components/ObjectsCategoryGrid.vue';
+import ObjectsGroupsGrid from '../components/ObjectsGroupsGrid.vue';
 </script>
 
 <template>
-  <section>
-    <h1>Калькулятор категории риска</h1>
-    <ObjectsCategoryGrid />
+  <section class="main-page">
+    <h1>Группы объектов защиты</h1>
+    <ObjectsGroupsGrid />
   </section>
 </template>
 
 <style>
+.main-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 </style>

@@ -67,26 +67,22 @@
   <div v-else-if="error">
     <p>Ошибка при загрузке данных. Попробуйте позже</p>
   </div>
-  <section v-else>
-    <h1></h1>
+  <section v-else class="form-page">
+    <h1>{{ objectsGroup.name }}</h1>
     <form @submit="handleSubmit" class="indicators-form">
-      <fieldset>
-        <legend>Индикаторы риска</legend>
-        <Select
-          v-for="(indicator, index) in riskIndicators"
-          :metric="indicator"
-          :index="index"
-        />
-      </fieldset>
-      <fieldset>
-        <legend>Критерии добросовестности</legend>
-        <Select
-          v-for="(criteria, index) in goodFaithCriteries"
-          :metric="criteria"
-          :index="index"
-        />
-      </fieldset>
-      <button type="submit">Рассчитать</button>
+      <h3>Индикаторы риска</h3>
+      <Select
+        v-for="(indicator, index) in riskIndicators"
+        :metric="indicator"
+        :index="index"
+      />
+      <h3>Критерии добросовестности</h3>
+      <Select
+        v-for="(criteria, index) in goodFaithCriteries"
+        :metric="criteria"
+        :index="index"
+      />
+      <button class="button" type="submit">Рассчитать</button>
     </form>
     <article v-if="result">
       <h2>Результаты:</h2>
@@ -100,21 +96,28 @@
 </template>
 
 <style scoped>
+  .form-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .indicators-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  .indicators-form fieldset legend {
-    font-weight: 700;
-    font-size: 1.25rem;
+  .button {
+    padding: 10px 5px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
   }
-
-  .indicators-form fieldset {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 5px;
+  
+  .button:hover {
+    background-color: var(--secondary-color);
   }
 </style>
