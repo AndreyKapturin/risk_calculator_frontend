@@ -13,5 +13,7 @@
     display: flex;
     justify-content: center;
     padding: 20px 5px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
   }
 </style>

@@ -1,3 +1,10 @@
+:root {
+  --primary-color: #151535;
+  --secondary-color: #C8511F;
+  --text-color: #ffffff;
+  --border-radius: 10px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -11,9 +18,14 @@ body,
 }
 
 #app {
-  max-width: 1000px;
-  margin: 0 auto;
   display: grid;
   gap: 20px;
   grid-template-rows: min-content auto min-content;
+}
+
+.content {
+  max-width: 1030px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
 }

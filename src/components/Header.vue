@@ -4,7 +4,9 @@
 
 <template>
   <header class="header">
-    <RouterLink class="link" to="/">Категория риска онлайн</RouterLink>
+    <div class="content">
+      <RouterLink class="link" to="/">КАТЕГОРИЯРИСКА.РФ</RouterLink>
+    </div>
   </header>
 </template>
 
@@ -12,11 +14,13 @@
   .header {
     display: flex;
     padding: 20px 5px;
-    box-shadow: 0px 1px 5px 1px rgb(0 0 0 / 20%);
+    background-color: var(--primary-color);
   }
   
   .link {
     text-decoration: none;
-    color: black;
+    color: var(--text-color);
+    font-size: clamp(1.5rem, 5vw ,2rem);
+    font-weight: 700;
   }
 </style>
