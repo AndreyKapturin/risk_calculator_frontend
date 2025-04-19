@@ -1,9 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
-import { createMetric } from '../api.ts';
+import { createMetric } from '../api.js';
 import Joi from 'joi';
-
-const METRIC_TYPES = ['risk indicator', 'good faith criteria'];
+import { METRIC_TYPES } from '../constants.js';
 
 const metricData = ref({
   name: '',
@@ -24,7 +23,7 @@ const formValidateScheme = Joi.object(
     name: Joi.string().min(1).messages({
       'string.empty': 'Текст метрики не может быть пустым',
     }),
-    type: Joi.valid(...METRIC_TYPES),
+    type: Joi.valid(METRIC_TYPES.RISK_INDICATOR, METRIC_TYPES.GOOD_FAITH_CRITERIA),
     indicators: Joi.array().min(2).items(Joi.object({
       text: Joi.string().min(1).max(512).messages({
       'string.empty': 'Индикаторы не могут быть пустыми',

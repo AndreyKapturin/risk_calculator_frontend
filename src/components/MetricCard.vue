@@ -1,20 +1,16 @@
-<script setup lang="ts">
+<script setup>
 import { useRoute } from 'vue-router';
 import { ref, computed } from 'vue';
-import type { IMetric } from '../../types.ts';
-import { useLoadData } from '../hooks/useLoadData.ts';
-import { getMetricWithIndicatorsById } from '../api.ts';
+import { useLoadData } from '../hooks/useLoadData.js';
+import { getMetricWithIndicatorsById } from '../api.js';
 import Loading from './Loading.vue';  
 import MetricIndicator from './MetricIndicator.vue';
 import EditMetricForm from './EditMetricForm.vue';
+import { METRIC_TYPES_TRANSLATE } from '../constants.js';
 
-const METRIC_TYPES_TRANSLATE = {
-  'risk indicator': 'Индикатор риска',
-  'good faith criteria': 'Критерий добросовестности',
-}
 const route = useRoute();
 const metricId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
-const { data: metric, isLoading, error } = useLoadData<IMetric>(() => getMetricWithIndicatorsById(metricId));
+const { data: metric, isLoading, error } = useLoadData(() => getMetricWithIndicatorsById(metricId));
 const metricType = computed(() => METRIC_TYPES_TRANSLATE[metric.value.type]);
 const onUpdateIndicatorText = (updatedIndicator) => {
   metric.value.indicators = metric.value.indicators.map(indicator => indicator.id == updatedIndicator.id ? updatedIndicator : indicator);
@@ -23,10 +19,6 @@ const onUpdateIndicatorText = (updatedIndicator) => {
 const onDeleteIndicator = (deletedIndicator) => {
   metric.value.indicators = metric.value.indicators.filter(indicator => indicator.id != deletedIndicator.id);
 }
-
-const metricData = ref({
-  name: computed(() => metric.value.name)
-})
 
 const isEditMode = ref(false);
 const setEditMode = () => {

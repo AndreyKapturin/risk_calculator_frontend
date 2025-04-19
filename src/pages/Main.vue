@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import ObjectsGroupsGrid from '../components/ObjectsGroupsGrid.vue';
+<script setup>
+  import ObjectsGroupsGrid from '../components/ObjectsGroupsGrid.vue';
 </script>
 
 <template>
@@ -10,9 +10,9 @@ import ObjectsGroupsGrid from '../components/ObjectsGroupsGrid.vue';
 </template>
 
 <style>
-.main-page {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+  .main-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 </style>
