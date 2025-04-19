@@ -1,37 +1,33 @@
-<script setup lang="ts">
+<script setup>
   import { useRoute } from 'vue-router'
   import Select from '../components/Select.vue';
-  import { MetricType, RiskCategory, type IObjectsGroup, type IResult } from '../../types';
   import { computed, ref } from 'vue';
-  import { useLoadData } from '../hooks/useLoadData';
-  import { getObjectsGroupById } from '../api';
+  import { useLoadData } from '../hooks/useLoadData.js';
+  import { getObjectsGroupById } from '../api.js';
   import Loading from '../components/Loading.vue';
+  import { RISK_CATEGORIES, METRIC_TYPES } from '../constants.js';
+  
 
-  const getRiskCategory = (index: number) => {
-    if (index >= 100) return RiskCategory.ExtremelyHigh;
-    if (index >= 45) return RiskCategory.High;
-    if (index >= 20) return RiskCategory.Significant;
-    if (index >= 9) return RiskCategory.Average;
-    if (index >= 4) return RiskCategory.Moderate;
-    return RiskCategory.Low;
+  const getRiskCategory = (index) => {
+    if (index >= 100) return RISK_CATEGORIES.EXTREMELY_HIGH;
+    if (index >= 45) return RISK_CATEGORIES.HIGH;
+    if (index >= 20) return RISK_CATEGORIES.SIGNIFICANT;
+    if (index >= 9) return RISK_CATEGORIES.AVERAGE;
+    if (index >= 4) return RISK_CATEGORIES.MODERATE;
+    return RISK_CATEGORIES.LOW;
   }
 
   const route = useRoute();
   const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
-  const { data: objectsGroup, isLoading, error } = useLoadData<IObjectsGroup>(() => getObjectsGroupById(id));
+  const { data: objectsGroup, isLoading, error } = useLoadData(() => getObjectsGroupById(id));
 
-  const riskIndicators = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === MetricType.RiskIndicator));
-  const goodFaithCriteries = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === MetricType.GoodFaithCriterion));
-  const result = ref<IResult|null>(null);
+  const riskIndicators = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === METRIC_TYPES.RISK_INDICATOR));
+  const goodFaithCriteries = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === METRIC_TYPES.GOOD_FAITH_CRITERIA));
+  const result = ref(null);
 
   
-  const handleSubmit = (event: Event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    // для соблюдения типов
-    if (!(event.target instanceof HTMLFormElement)) {
-      throw new Error('Неверный целевой элемент');
-    }
 
     let totalRiskIndicator = 0;
     let totalGoodFaithCriteries = 0;
@@ -39,10 +35,10 @@
     const formData = new FormData(event.target);
     
     for (const [key, value] of formData) {
-      if (key.startsWith(MetricType.RiskIndicator)) {
+      if (key.startsWith(METRIC_TYPES.RISK_INDICATOR)) {
         totalRiskIndicator += Number(value);
       }
-      if (key.startsWith(MetricType.GoodFaithCriterion)) {
+      if (key.startsWith(METRIC_TYPES.GOOD_FAITH_CRITERIA)) {
         totalGoodFaithCriteries += Number(value);
       }
     }
@@ -59,7 +55,6 @@
       riskCategory
     }
   }
-
 </script>
 
 <template>

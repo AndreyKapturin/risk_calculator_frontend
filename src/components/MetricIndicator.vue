@@ -1,18 +1,9 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
-import { updateMetricIndicatorText, deleteIndicator } from '../api.ts';
-interface IIndicator {
-  text: String
-}
+import { updateMetricIndicatorText, deleteIndicator } from '../api.js';
 
-const props = defineProps<{
-  indicator: IIndicator
-}>()
-
-const emit = defineEmits<{
-  (e: 'updateIndicatorText', updatedIndicator): void,
-  (e: 'deleteIndicator', deletedIndicator): void,
-}>()
+const props = defineProps(['indicator']);
+const emit = defineEmits(['updateIndicatorText', 'deleteIndicator']);
 
 const isEditMode = ref(false);
 const indicatorText = ref(props.indicator.text);

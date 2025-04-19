@@ -1,11 +1,6 @@
-<script setup lang="ts">
-import type { IMetric } from '../../types';
-
-const props = defineProps<{
-  metric: IMetric;
-  index: number;
-}>()
-const selectName = props.metric.type + '-' + props.index;
+<script setup>
+  const props = defineProps(['metric', 'index']);
+  const selectName = props.metric.type + '-' + props.index;
 </script>
 
 <template>

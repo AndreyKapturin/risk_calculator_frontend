@@ -1,10 +1,9 @@
-<script setup lang="ts">
-  import { useLoadData } from '../hooks/useLoadData.ts';
-  import { getAllMetricsWithIndicators } from '../api.ts';
+<script setup>
+  import { useLoadData } from '../hooks/useLoadData.js';
+  import { getAllMetricsWithIndicators } from '../api.js';
   import Loading from '../components/Loading.vue';
-  import MetricCard from '../components/MetricCard.vue';
 
-  const { data: metrics, isLoading, error } = useLoadData<IObjectsGroup>(getAllMetricsWithIndicators);
+  const { data: metrics, isLoading } = useLoadData(getAllMetricsWithIndicators);
 
 </script>
 

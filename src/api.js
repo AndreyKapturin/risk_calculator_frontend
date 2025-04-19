@@ -1,11 +1,9 @@
-import type { IObjectsGroup, IObjectsGroupForList, IMetric } from "../types";
-
 const BASE_URL = 'http://localhost:3000/api-v1';
 
 export const getObjectsGroupsList = async () => {
   try {
     const response = await fetch(`${BASE_URL}/objects-groups`);
-    const objectsGroups: IObjectsGroupForList[] = await response.json();
+    const objectsGroups = await response.json();
     return objectsGroups;
   } catch (error) {
     console.log('Fetch objects groups error: ', error);
@@ -13,11 +11,11 @@ export const getObjectsGroupsList = async () => {
   }
 }
   
-export const getObjectsGroupById = async (id: string) => {
+export const getObjectsGroupById = async (id) => {
   // TODO: сделать нормальный ендпоинт на бекенде 
   try {
     const response = await fetch(`${BASE_URL}/objects-groups/${id}`);
-    const metrics: IObjectsGroup = await response.json();
+    const metrics = await response.json();
     return metrics;
   } catch (error) {
     console.log('Fetch metrics: ', error);
@@ -40,8 +38,6 @@ export const getMetricWithIndicatorsById = async (metricId) => {
   try {
     const metrics = await getAllMetricsWithIndicators();
     const metric = metrics.find(metric => metric.id == metricId);
-    console.log(metric);
-    
     return metric;
   } catch (error) {
     console.log('Fetch metrics: ', error);
@@ -49,7 +45,7 @@ export const getMetricWithIndicatorsById = async (metricId) => {
   }
 }
 
-export const createMetric = async (metric: IMetric) => {
+export const createMetric = async (metric) => {
   try {
     const response = await fetch(`${BASE_URL}/metrics`, {
       method: 'POST',

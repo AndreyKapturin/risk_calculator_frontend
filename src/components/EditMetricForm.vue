@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
-import { updateMetric } from '../api.ts';
+import { updateMetric } from '../api.js';
 
 const props = defineProps(['metric']);
 const emit = defineEmits((['updateMetric']))
