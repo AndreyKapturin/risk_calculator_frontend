@@ -3,7 +3,6 @@ import { useRoute } from 'vue-router';
 import { ref, computed } from 'vue';
 import { useLoadData } from '../hooks/useLoadData.js';
 import { getMetricWithIndicatorsById } from '../api.js';
-import Loading from './Loading.vue';  
 import MetricIndicator from './MetricIndicator.vue';
 import EditMetricForm from './EditMetricForm.vue';
 import { METRIC_TYPES_TRANSLATE } from '../constants.js';
