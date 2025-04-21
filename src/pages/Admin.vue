@@ -1,12 +1,14 @@
-<script setup></script>
+<script setup>
+  import NavigationLink from '../components/NavigationLink.vue';
+</script>
 
 <template>
   <section class="admin-page">
-    <nav class="sidebar">
-      <RouterLink to="/admin/metrics">Метрики</RouterLink>
-      <RouterLink to="/admin/create-metric">Создать метрику</RouterLink>
-    </nav>
-    <RouterView />
+  <aside class="sidebar">
+    <NavigationLink :to="'/admin/metrics'">Метрики</NavigationLink>
+    <NavigationLink :to="'/admin/create-metric'">Добавить новую метрику</NavigationLink>
+  </aside>
+    <RouterView/>
   </section>
 </template>
 
@@ -15,9 +17,10 @@
     display: flex;
     gap: 20px;
   }
-
   .sidebar {
     display: flex;
     flex-direction: column;
+    row-gap: 5px;
+    flex: 150px 0 0;
   }
 </style>
