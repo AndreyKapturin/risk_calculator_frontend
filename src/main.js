@@ -1,8 +1,16 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
-import router from './router/router'
+import { createApp } from 'vue';
+import './style.css';
+import App from './App.vue';
+import router from './router/router';
+import Button from './ui/Button.vue';
+import Select from './ui/Select.vue';
+import Label from './ui/Label.vue';
+import Loading from './components/Loading.vue';
 
 createApp(App)
 .use(router)
+.component('Button', Button)
+.component('Select', Select)
+.component('Label', Label)
+.component('Loading', Loading)
 .mount('#app')

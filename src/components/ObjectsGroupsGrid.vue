@@ -1,7 +1,6 @@
 <script setup>
   import { getObjectsGroupsList } from '../api.js';
   import { useLoadData } from '../hooks/useLoadData.js';
-  import Loading from './Loading.vue';
   import ObjectsGroupCard from './ObjectsGroupCard.vue';
   const { data: objectsGroups, isLoading, error } = useLoadData(getObjectsGroupsList);
 </script>

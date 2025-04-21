@@ -2,7 +2,9 @@
 import { ref } from 'vue';
 import { createMetric } from '../api.js';
 import Joi from 'joi';
-import { METRIC_TYPES } from '../constants.js';
+import { METRIC_TYPES, METRIC_TYPES_TRANSLATE } from '../constants.js';
+import Textarea from '../ui/Textarea.vue';
+import Input from '../ui/Input.vue';
 
 const metricData = ref({
   name: '',
@@ -45,7 +47,7 @@ const onSubmitForm = () => {
     return;
   }
   
-  createMetric(metricData.value);
+  createMetric(value);
 }
 
 const deleteIndicator = (index) => {
@@ -56,33 +58,34 @@ const deleteIndicator = (index) => {
 
 <template>
   <form class="create-metric-form">
-    <label for="metric-name">Текст метрики:</label>
-    <textarea class="metric-name-textarea" id="metric-name" v-model="metricData.name"></textarea>
-    <label for="metric-type">Тип метрики:</label>
-    <select id="metric-type" v-model="metricData.type">
-      <option value="risk indicator">Индикатор риска</option>
-      <option value="good faith criteria">Критерий добросовестности</option>
-    </select>
+    <Label>
+      Текст метрики:
+      <Textarea v-model="metricData.name" rows="3" />
+    </Label>
+    <Label>
+      Тип метрики:
+      <Select v-model="metricData.type">
+        <option :value="METRIC_TYPES.RISK_INDICATOR">{{ METRIC_TYPES_TRANSLATE[METRIC_TYPES.RISK_INDICATOR] }}</option>
+        <option :value="METRIC_TYPES.GOOD_FAITH_CRITERIA">{{ METRIC_TYPES_TRANSLATE[METRIC_TYPES.GOOD_FAITH_CRITERIA] }}</option>
+      </Select>
+    </Label>
     <fieldset class="indicators-fieldset">
       <legend>Индикаторы:</legend>
       <template v-for="(indicator, i) in metricData.indicators">
-        <div v-if="i > 1">
-          <input v-model="metricData.indicators[i].text">
-          <button @click="deleteIndicator(i)">Удалить</button>
+        <div class="removable-indicator-input" v-if="i > 1">
+          <Input v-model="metricData.indicators[i].text" />
+          <Button @click="deleteIndicator(i)">Удалить</Button>
         </div>
-        <input v-else v-model="metricData.indicators[i].text">
+        <Input v-else v-model="metricData.indicators[i].text" />
       </template>
-      <button @click="addIndicator" type="button">Добавить индкатор</button>
+      <Button @click="addIndicator" type="button">Добавить индкатор</Button>
     </fieldset>
-    <button type="button" @click="onSubmitForm">Создать метрику</button>
+    <Button type="button" @click="onSubmitForm">Создать метрику</Button>
     <span v-if="formErrors">{{ formErrors }}</span>
   </form>
 </template>
 
 <style scoped>
-  .metric-name-textarea {
-    resize: vertical;
-  }
   .create-metric-form {
     width: 100%;
     display: flex;
@@ -94,5 +97,9 @@ const deleteIndicator = (index) => {
     flex-direction: column;
     gap: 10px;
     border: none;
+  }
+  .removable-indicator-input {
+    display: flex;
+    gap: 10px;
   }
 </style>

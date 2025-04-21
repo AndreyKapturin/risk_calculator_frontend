@@ -6,7 +6,7 @@
   <section class="admin-page">
   <aside class="sidebar">
     <NavigationLink :to="'/admin/metrics'">Метрики</NavigationLink>
-    <NavigationLink :to="'/admin/create-metric'">Добавить новую метрику</NavigationLink>
+    <NavigationLink :to="'/admin/create-metric'">Создать метрику</NavigationLink>
   </aside>
     <RouterView/>
   </section>
