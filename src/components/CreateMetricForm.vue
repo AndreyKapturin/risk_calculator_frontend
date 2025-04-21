@@ -1,59 +1,71 @@
 <script setup>
-import { ref } from 'vue';
-import { createMetric } from '../api.js';
-import Joi from 'joi';
-import { METRIC_TYPES, METRIC_TYPES_TRANSLATE } from '../constants.js';
-import Textarea from '../ui/Textarea.vue';
-import Input from '../ui/Input.vue';
+  import { ref } from 'vue';
+  import { createMetric } from '../api.js';
+  import Joi from 'joi';
+  import { METRIC_TYPES, METRIC_TYPES_TRANSLATE } from '../constants.js';
+  import Textarea from '../ui/Textarea.vue';
+  import FromErrorMessage from '../ui/FormErrorMessage.vue';
+  import Input from '../ui/Input.vue';
+  import { toast } from 'vue3-toastify';
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
 
-const metricData = ref({
-  name: '',
-  type: 'risk indicator',
-  indicators: [
+  const metricData = ref({
+    name: '',
+    type: 'risk indicator',
+    indicators: [
+      {
+        text: ''
+      },
+      {
+        text: ''
+      }
+    ]
+  });
+
+  const formErrors = ref(null);
+  const formValidateScheme = Joi.object(
     {
-      text: ''
-    },
-    {
-      text: ''
+      name: Joi.string().min(1).max(1000).messages({
+        'string.empty': 'Текст метрики не может быть пустым',
+        'string.max': 'Текст метрики не может быть больше 1000 символов',
+      }),
+      type: Joi.valid(METRIC_TYPES.RISK_INDICATOR, METRIC_TYPES.GOOD_FAITH_CRITERIA),
+      indicators: Joi.array().min(2).items(Joi.object({
+        text: Joi.string().min(1).max(512).messages({
+        'string.empty': 'Индикаторы не могут быть пустыми',
+      }),
+      }))
     }
-  ]
-});
+  );
 
-const formErrors = ref(null);
-const formValidateScheme = Joi.object(
-  {
-    name: Joi.string().min(1).messages({
-      'string.empty': 'Текст метрики не может быть пустым',
-    }),
-    type: Joi.valid(METRIC_TYPES.RISK_INDICATOR, METRIC_TYPES.GOOD_FAITH_CRITERIA),
-    indicators: Joi.array().min(2).items(Joi.object({
-      text: Joi.string().min(1).max(512).messages({
-      'string.empty': 'Индикаторы не могут быть пустыми',
-    }),
-    }))
+  const addIndicator = () => {
+    metricData.value.indicators.push({ text: '' });
   }
-);
 
-const addIndicator = () => {
-  metricData.value.indicators.push({ text: '' });
-}
+  const onSubmitForm = async () => {
+    const { value, error } = formValidateScheme.validate(metricData.value);
+    formErrors.value = null;
 
-const onSubmitForm = () => {
-  const { value, error } = formValidateScheme.validate(metricData.value);
-  formErrors.value = null;
-
-  if (error !== undefined) {
-    formErrors.value = error.details[0].message;
-    return;
+    if (error !== undefined) {
+      formErrors.value = error.details[0].message;
+      return;
+    }
+    
+    try {
+      const { id } = await createMetric(value);
+      router.push(`/admin/metrics/${id}`);
+    } catch (error) {
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000
+      })
+    }
   }
-  
-  createMetric(value);
-}
 
-const deleteIndicator = (index) => {
-  metricData.value.indicators = metricData.value.indicators.filter((e, i) => i !== index);
-}
-
+  const deleteIndicator = (index) => {
+    metricData.value.indicators = metricData.value.indicators.filter((e, i) => i !== index);
+  }
 </script>
 
 <template>
@@ -78,10 +90,10 @@ const deleteIndicator = (index) => {
         </div>
         <Input v-else v-model="metricData.indicators[i].text" />
       </template>
+      <FromErrorMessage v-if="formErrors">{{ formErrors }}</FromErrorMessage>
       <Button @click="addIndicator" type="button">Добавить индкатор</Button>
     </fieldset>
     <Button type="button" @click="onSubmitForm">Создать метрику</Button>
-    <span v-if="formErrors">{{ formErrors }}</span>
   </form>
 </template>
 
