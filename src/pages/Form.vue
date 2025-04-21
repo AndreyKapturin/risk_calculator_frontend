@@ -1,12 +1,10 @@
 <script setup>
   import { useRoute } from 'vue-router'
-  import Select from '../components/Select.vue';
   import { computed, ref } from 'vue';
   import { useLoadData } from '../hooks/useLoadData.js';
   import { getObjectsGroupById } from '../api.js';
-  import Loading from '../components/Loading.vue';
+ 
   import { RISK_CATEGORIES, METRIC_TYPES } from '../constants.js';
-  
 
   const getRiskCategory = (index) => {
     if (index >= 100) return RISK_CATEGORIES.EXTREMELY_HIGH;
@@ -66,18 +64,32 @@
     <h1>{{ objectsGroup.name }}</h1>
     <form @submit="handleSubmit" class="indicators-form">
       <h3>Индикаторы риска</h3>
-      <Select
-        v-for="(indicator, index) in riskIndicators"
-        :metric="indicator"
-        :index="index"
-      />
+      <template v-for="(metric, index) in riskIndicators">
+        <Label>
+          {{ metric.name }}
+          <Select :name="metric.type + '-' + index">
+            <option
+              v-for="indicator in metric.indicators"
+              :value="indicator.value">
+              {{ indicator.text }}
+            </option>
+          </Select>
+        </Label>
+      </template>
       <h3>Критерии добросовестности</h3>
-      <Select
-        v-for="(criteria, index) in goodFaithCriteries"
-        :metric="criteria"
-        :index="index"
-      />
-      <button class="button" type="submit">Рассчитать</button>
+       <template v-for="(metric, index) in goodFaithCriteries">
+        <Label>
+          {{ metric.name }}
+          <Select :name="metric.type + '-' + index">
+            <option
+              v-for="indicator in metric.indicators"
+              :value="indicator.value">
+              {{ indicator.text }}
+            </option>
+          </Select>
+        </Label>
+      </template>
+      <Button class="button" type="submit">Рассчитать</Button>
     </form>
     <article v-if="result">
       <h2>Результаты:</h2>

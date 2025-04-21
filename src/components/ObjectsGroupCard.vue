@@ -1,5 +1,5 @@
 <script setup>
-  const props = defineProps(['objectsGroup']);
+  defineProps(['objectsGroup']);
 </script>
 
 <template>
@@ -14,7 +14,7 @@
     color: var(--text-color);
     background-color: var(--primary-color);
     padding: 10px;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     text-align: center;
     text-decoration: none;
     min-height: 120px;
