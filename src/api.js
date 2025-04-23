@@ -108,3 +108,13 @@ export const updateMetric = async (metricId, data) => {
     throw error;
   }
 }
+
+export const deleteMetric = async (metricId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/metrics/${metricId}`, { method: 'DELETE' });
+    return response.ok
+  } catch (error) {
+    console.log('Create metric error: ', error);
+    throw error;
+  }
+}

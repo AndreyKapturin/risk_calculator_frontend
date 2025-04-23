@@ -7,6 +7,7 @@ import Button from './ui/Button.vue';
 import Select from './ui/Select.vue';
 import Label from './ui/Label.vue';
 import Loading from './components/Loading.vue';
+import Input from './ui/Input.vue';
 
 createApp(App)
 .use(router)
@@ -14,4 +15,5 @@ createApp(App)
 .component('Select', Select)
 .component('Label', Label)
 .component('Loading', Loading)
+.component('Input', Input)
 .mount('#app')

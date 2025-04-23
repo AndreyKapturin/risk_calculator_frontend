@@ -1,13 +1,15 @@
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
 import { useLoadData } from '../hooks/useLoadData.js';
-import { getMetricWithIndicatorsById } from '../api.js';
+import { deleteMetric, getMetricWithIndicatorsById } from '../api.js';
 import MetricIndicator from './MetricIndicator.vue';
 import EditMetricForm from './EditMetricForm.vue';
 import { METRIC_TYPES_TRANSLATE } from '../constants.js';
+import { toast } from 'vue3-toastify';
 
 const route = useRoute();
+const router = useRouter();
 const metricId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
 const { data: metric, isLoading, error } = useLoadData(() => getMetricWithIndicatorsById(metricId));
 const metricType = computed(() => METRIC_TYPES_TRANSLATE[metric.value.type]);
@@ -33,6 +35,19 @@ const onUpdateMetric = (updatedMetric) => {
   isEditMode.value = false;
 }
 
+const handleMetricDelete = async () => {
+  const isConfimed = confirm('Метрика будет удалена полностью со всеми индикаторами и значениями для каждой группы объектоа. Продолжить?');
+
+  if (isConfimed) {
+    try {
+      await deleteMetric(metricId);
+      router.push('/admin/metrics');
+    } catch (error) {
+      toast(error.message, { type: 'error' });
+    }
+  }
+}
+
 </script>
 
 <template >
@@ -40,33 +55,40 @@ const onUpdateMetric = (updatedMetric) => {
   <article v-else class="metric-card">
     <div class="control-buttons">
       <template v-if="isEditMode">
-        <button @click="cancelEditMode">Отмена</button>
+        <Button @click="cancelEditMode">Отмена</Button>
       </template>
       <template v-else>
-        <button @click="setEditMode">Изменить</button>
+        <Button @click="setEditMode">Изменить</Button>
+        <Button @click="handleMetricDelete">Удалить</Button>
       </template>
     </div>
     <template v-if="isEditMode">
       <EditMetricForm :metric="metric" @updateMetric="onUpdateMetric"/>
     </template>
     <template v-else>
-      <p>Имя метрики: {{ metric.name }}</p>
-      <p>Тип метрики: {{ metricType }}</p>
+      <h4>Текст метрики:</h4>
+      <p> {{ metric.name }}</p>
+      <h4>Тип метрики:</h4>
+      <p> {{ metricType }}</p>
     </template>
     <article>
       <h4>Индикаторы:</h4>
-      <MetricIndicator
-        v-for="indicator in metric.indicators"
-        :indicator="indicator"
-        @update-indicator-text="onUpdateIndicatorText"
-        @delete-indicator="onDeleteIndicator"
+      <div class="indicators-list">
+        <MetricIndicator
+          v-for="(indicator, index) in metric.indicators"
+          :indicator="indicator"
+          :index
+          @update-indicator-text="onUpdateIndicatorText"
+          @delete-indicator="onDeleteIndicator"
         />
+      </div>
     </article>
   </article>
 </template>
 
 <style scoped>
   .metric-card {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -74,5 +96,12 @@ const onUpdateMetric = (updatedMetric) => {
   .control-buttons {
     display: flex;
     justify-content: end;
+    gap: 10px;
+  }
+  .indicators-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
   }
 </style>
