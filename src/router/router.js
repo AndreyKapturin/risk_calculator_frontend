@@ -12,11 +12,16 @@ const routes = [
   { path: '/admin', component: Admin, children: [
     {
       path: 'metrics',
-      component: MetricsList
-    },
-    {
-      path: 'metrics/:id',
-      component: MetricCard
+      children: [
+        {
+          path: '',
+          component: MetricsList
+        },
+        {
+          path: ':id',
+          component: MetricCard
+        }
+      ]
     },
     {
       path: 'create-metric',
@@ -27,7 +32,11 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  matchOptions: {
+    exact: false,
+    strict: false
+  }
 })
 
 export default router;
