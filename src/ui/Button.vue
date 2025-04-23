@@ -1,7 +1,14 @@
-<script setup></script>
+<script setup>
+  defineProps({
+    disabled: {
+      required: false,
+      default: false
+    }
+  })
+</script>
 
 <template>
-  <button><slot /></button>
+  <button :disabled><slot /></button>
 </template>
 
 <style scoped>
@@ -16,5 +23,9 @@
   
   button:hover {
     background-color: var(--secondary-color);
+  }
+  button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
   }
 </style>

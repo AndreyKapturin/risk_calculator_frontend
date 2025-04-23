@@ -11,7 +11,6 @@
     width: 100%;
     padding: 10px;
     border-radius: var(--border-radius);
-    cursor: pointer;
     border: 1px solid black;
     outline: none;
   }

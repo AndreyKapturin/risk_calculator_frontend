@@ -1,12 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { updateMetricIndicatorText, deleteIndicator } from '../api.js';
 
-const props = defineProps(['indicator']);
+const props = defineProps(['indicator', 'index']);
 const emit = defineEmits(['updateIndicatorText', 'deleteIndicator']);
 
 const isEditMode = ref(false);
 const indicatorText = ref(props.indicator.text);
+const isEdited = computed(() => props.indicator.text !== indicatorText.value);
 
 const setEditMode = () => {
   isEditMode.value = true;
@@ -35,18 +36,18 @@ const handleDelete = async () => {
 
 <template>
   <div class="metric-indicator">
-    <template  v-if="isEditMode">
-      <input  v-model="indicatorText">
+    <template v-if="isEditMode">
+      <Input  v-model="indicatorText" />
       <div class="control-buttons">
-        <button @click="saveChanges">Сохранить</button>
-        <button @click="cancelEditMode">Отмена</button>
+        <Button :disabled="!isEdited" @click="saveChanges">Сохранить</Button>
+        <Button @click="cancelEditMode">Отмена</Button>
       </div>
     </template>
     <template  v-else>
       <p >{{ indicator.text }}</p>
     <div class="control-buttons">
-      <button @click="setEditMode">Изменить</button>
-      <button @click="handleDelete">Удалить</button>
+      <Button @click="setEditMode">Изменить</Button>
+      <Button v-if="index > 1" @click="handleDelete">Удалить</Button>
     </div>
     </template>
   </div>
@@ -57,6 +58,8 @@ const handleDelete = async () => {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
+    column-gap: 10px;
   }
 
   .control-buttons {

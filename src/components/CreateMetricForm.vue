@@ -4,8 +4,7 @@
   import Joi from 'joi';
   import { METRIC_TYPES, METRIC_TYPES_TRANSLATE } from '../constants.js';
   import Textarea from '../ui/Textarea.vue';
-  import FromErrorMessage from '../ui/FormErrorMessage.vue';
-  import Input from '../ui/Input.vue';
+  import FormErrorMessage from '../ui/FormErrorMessage.vue';
   import { toast } from 'vue3-toastify';
   import { useRouter } from 'vue-router';
   const router = useRouter();
@@ -90,7 +89,7 @@
         </div>
         <Input v-else v-model="metricData.indicators[i].text" />
       </template>
-      <FromErrorMessage v-if="formErrors">{{ formErrors }}</FromErrorMessage>
+      <FormErrorMessage v-if="formErrors">{{ formErrors }}</FormErrorMessage>
       <Button @click="addIndicator" type="button">Добавить индкатор</Button>
     </fieldset>
     <Button type="button" @click="onSubmitForm">Создать метрику</Button>
