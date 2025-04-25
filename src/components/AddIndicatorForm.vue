@@ -10,9 +10,8 @@
 
   const handleAddIndicator = async () => {
     try {
-      const data = await addIndicator(props.metricId, { text: indicatorText.value });
-      // TODO: Заменить на нормальный объект, пришедший ответом на запрос
-      emit('addIndicator', {...data, text: indicatorText.value });
+      const createdIndicator = await addIndicator(props.metricId, { text: indicatorText.value });
+      emit('addIndicator', createdIndicator);
       indicatorText.value = '';
     } catch (error) {
       toast(error.message, { type: 'error' });

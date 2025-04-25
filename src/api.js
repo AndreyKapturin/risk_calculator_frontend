@@ -12,7 +12,6 @@ export const getObjectsGroupsList = async () => {
 }
   
 export const getObjectsGroupById = async (id) => {
-  // TODO: сделать нормальный ендпоинт на бекенде 
   try {
     const response = await fetch(`${BASE_URL}/objects-groups/${id}`);
     const metrics = await response.json();
@@ -23,7 +22,7 @@ export const getObjectsGroupById = async (id) => {
   }
 }
 
-export const getAllMetricsWithIndicators = async () => {
+export const getMetrics = async () => {
   try {
     const response = await fetch(`${BASE_URL}/metrics`);
     const metrics = await response.json();
@@ -34,13 +33,13 @@ export const getAllMetricsWithIndicators = async () => {
   }
 }
 
-export const getMetricWithIndicatorsById = async (metricId) => {
+export const getMetricById = async (metricId) => {
   try {
-    const metrics = await getAllMetricsWithIndicators();
-    const metric = metrics.find(metric => metric.id == metricId);
+    const response = await fetch(`${BASE_URL}/metrics/${metricId}`);
+    const metric = await response.json();
     return metric;
   } catch (error) {
-    console.log('Fetch metrics: ', error);
+    console.log('Fetch metric error', error);
     throw error;
   }
 }
@@ -54,8 +53,8 @@ export const createMetric = async (metric) => {
       },
       body: JSON.stringify({ metric }),
     });
-    const data = await response.json();
-    return data;
+    const createdMetric = await response.json();
+    return createdMetric;
   } catch (error) {
     console.log('Create metric error: ', error);
     throw error;
@@ -94,17 +93,17 @@ export const deleteIndicator = async (indicatorId) => {
 
 export const updateMetric = async (metricId, data) => {
   try {
-    await fetch(`${BASE_URL}/metrics/${metricId}`, {
+    const response = await fetch(`${BASE_URL}/metrics/${metricId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ metric: data })
     });
-    
-    return { id: metricId, ...data };
+    const updatedMetric = await response.json();
+    return updatedMetric;
   } catch (error) {
-    console.log('Create metric error: ', error);
+    console.log('Update metric error: ', error);
     throw error;
   }
 }
@@ -128,8 +127,8 @@ export const addIndicator = async (metricId, indicator) => {
       },
       body: JSON.stringify({ indicator }),
     });
-    const data = await response.json();
-    return data;
+    const createdIndicator = await response.json();
+    return createdIndicator;
   } catch (error) {
     console.log('Add indicator in metric error: ', error);
     throw error;
