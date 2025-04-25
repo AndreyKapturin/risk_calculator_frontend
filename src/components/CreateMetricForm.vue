@@ -71,7 +71,7 @@
   <form class="create-metric-form">
     <Label>
       Текст метрики:
-      <Textarea v-model="metricData.name" rows="3" />
+      <Textarea v-model="metricData.name" rows="3" placeholder="Текст метрики" />
     </Label>
     <Label>
       Тип метрики:
@@ -82,12 +82,11 @@
     </Label>
     <fieldset class="indicators-fieldset">
       <legend>Индикаторы:</legend>
-      <template v-for="(indicator, i) in metricData.indicators">
-        <div class="removable-indicator-input" v-if="i > 1">
-          <Input v-model="metricData.indicators[i].text" />
-          <Button @click="deleteIndicator(i)">Удалить</Button>
+      <template v-for="(indicator, i) in metricData.indicators" :key="indicator">
+        <div class="removable-indicator-input">
+          <Input v-model="metricData.indicators[i].text" placeholder="Текст индикатора" />
+          <Button v-if="i > 1" @click="deleteIndicator(i)">Удалить</Button>
         </div>
-        <Input v-else v-model="metricData.indicators[i].text" />
       </template>
       <FormErrorMessage v-if="formErrors">{{ formErrors }}</FormErrorMessage>
       <Button @click="addIndicator" type="button">Добавить индкатор</Button>
