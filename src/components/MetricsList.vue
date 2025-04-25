@@ -1,8 +1,8 @@
 <script setup>
   import { useLoadData } from '../hooks/useLoadData.js';
-  import { getAllMetricsWithIndicators } from '../api.js';
+  import { getMetrics } from '../api.js';
 
-  const { data: metrics, isLoading } = useLoadData(getAllMetricsWithIndicators);
+  const { data: metrics, isLoading } = useLoadData(getMetrics);
 
 </script>
 

@@ -2,7 +2,7 @@
   import { useRoute, useRouter } from 'vue-router';
   import { ref, computed } from 'vue';
   import { useLoadData } from '../hooks/useLoadData.js';
-  import { deleteMetric, getMetricWithIndicatorsById } from '../api.js';
+  import { deleteMetric, getMetricById } from '../api.js';
   import MetricIndicator from './MetricIndicator.vue';
   import EditMetricForm from './EditMetricForm.vue';
   import { METRIC_TYPES_TRANSLATE } from '../constants.js';
@@ -13,7 +13,7 @@
   const router = useRouter();
 
   const metricId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
-  const { data: metric, isLoading } = useLoadData(() => getMetricWithIndicatorsById(metricId));
+  const { data: metric, isLoading } = useLoadData(() => getMetricById(metricId));
   const metricType = computed(() => METRIC_TYPES_TRANSLATE[metric.value.type]);
   const isEditMode = ref(false);
 
@@ -30,7 +30,7 @@
   }
 
   const onUpdateMetric = (updatedMetric) => {
-    metric.value = { ...metric.value, ...updatedMetric };
+    metric.value = updatedMetric;
     isEditMode.value = false;
   }
 
