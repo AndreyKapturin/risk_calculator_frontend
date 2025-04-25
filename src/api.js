@@ -118,3 +118,20 @@ export const deleteMetric = async (metricId) => {
     throw error;
   }
 }
+
+export const addIndicator = async (metricId, indicator) => {
+  try {
+    const response = await fetch(`${BASE_URL}/metrics/${metricId}/indicators`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ indicator }),
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log('Add indicator in metric error: ', error);
+    throw error;
+  }
+}
