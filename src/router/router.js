@@ -5,6 +5,8 @@ import Admin from '../pages/Admin.vue';
 import CreateMetricForm from '../components/CreateMetricForm.vue';
 import MetricsList from '../components/MetricsList.vue';
 import MetricCard from '../components/MetricCard.vue';
+import ObjectsGroupsList from '../components/ObjectsGroupsList.vue';
+import ObjectsGroup from '../components/ObjectsGroup.vue';
 
 const routes = [
   { path: '/', component: Main },
@@ -26,6 +28,19 @@ const routes = [
     {
       path: 'create-metric',
       component: CreateMetricForm
+    },
+    {
+      path: 'objects-groups',
+      children: [
+        {
+          path: '',
+          component: ObjectsGroupsList
+        },
+        {
+          path: ':id',
+          component: ObjectsGroup
+        },
+      ]
     }
   ]},
 ]
