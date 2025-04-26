@@ -1,18 +1,20 @@
 <script setup>
   import { useRoute } from 'vue-router';
   import { useLoadData } from '../hooks/useLoadData.js';
-  import { getObjectsGroupById } from '../api.js';
+  import { getObjectsGroupById, getMetrics } from '../api.js';
   import { METRIC_TYPES } from '../constants.js';
   import { computed, ref } from 'vue';
   import EditObjectsGroupForm from './EditObjectsGroupForm.vue';
+  import AddMetricForm from './AddMetricForm.vue';
 
   const route = useRoute();
   const objectsGroupId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
   const { data: objectsGroup, isLoading } = useLoadData(() => getObjectsGroupById(objectsGroupId));
-  
+  const { data: metrics } = useLoadData(getMetrics);
   const riskIndicators = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === METRIC_TYPES.RISK_INDICATOR));
   const goodFaithCriteries = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === METRIC_TYPES.GOOD_FAITH_CRITERIA));
   const isEditMode = ref(false);
+
   const setEditMode = () => isEditMode.value = true;
   const cancelEditMode = () => isEditMode.value = false;
   const handleDeleteObjectsGroup = () => {
@@ -23,6 +25,9 @@
     objectsGroup.value = updatedObjectsGroup;
   }
 
+  const onAddMetric = (addedMetric) => {
+    objectsGroup.value.metrics.push(addedMetric);
+  }
 </script>
 
 <template>
@@ -53,9 +58,9 @@
     </template>
 
     <h2>Метрики:</h2>
-
+    <AddMetricForm v-if="isEditMode" :metrics :objectsGroup @addMetric="onAddMetric" />
     <h3>Индикаторы риска:</h3>
-    <div class="metric" v-for="metric in riskIndicators">
+    <div class="metric" v-for="metric in riskIndicators" :key="metric.id">
       <p class="metric__name">{{ metric.name }}</p>
       <div class="indicator" v-for="indicator in metric.indicators">
         <p>{{ indicator.text }}</p>
@@ -64,14 +69,13 @@
     </div>
 
     <h3>Критерии добросовестности:</h3>
-    <div class="metric" v-for="metric in goodFaithCriteries">
+    <div class="metric" v-for="metric in goodFaithCriteries" :key="metric.id">
       <p class="metric__name">{{ metric.name }}</p>
       <div class="indicator" v-for="indicator in  metric.indicators">
         <p>{{ indicator.text }}</p>
         <p>{{ indicator.value }}</p>
       </div>
     </div>
-
   </article>
 </template>
 
