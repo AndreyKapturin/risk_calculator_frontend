@@ -39,6 +39,22 @@ export const updateObjectsGroup = async (id, objectsGroup) => {
   }
 }
 
+export const addMetricToObjectsGroup = async (objectsGroupId, metric) => {
+  try {
+    await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/metrics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ metric }),
+    });
+    return metric;
+  } catch (error) {
+    console.log('Update objects group error: ', error);
+    throw error;
+  }
+}
+
 export const getMetrics = async () => {
   try {
     const response = await fetch(`${BASE_URL}/metrics`);
