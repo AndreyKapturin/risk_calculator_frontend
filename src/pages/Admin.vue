@@ -7,6 +7,7 @@
   <aside class="sidebar">
     <NavigationLink :to="'/admin/metrics'">Метрики</NavigationLink>
     <NavigationLink :to="'/admin/create-metric'">Создать метрику</NavigationLink>
+    <NavigationLink :to="'/admin/objects-groups'">Группы объектов</NavigationLink>
   </aside>
     <RouterView/>
   </section>
