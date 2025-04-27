@@ -75,6 +75,30 @@ export const removeMetricFromObjectsGroup = async (objectsGroupId, metricId) => 
   }
 }
 
+export const updateIndicatorsValues = async (objectsGroupId, indicators) => {
+  try {
+    const response = await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/values`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ indicators }),
+    });
+
+    if (response.ok) {
+      const updatedIndicators = await response.json();
+      return updatedIndicators;
+    } else {
+      const { message } = await response.json();
+      throw Error(message);
+    }
+
+  } catch (error) {
+    console.log('Update objects group error: ', error);
+    throw error;
+  }
+}
+
 export const getMetrics = async () => {
   try {
     const response = await fetch(`${BASE_URL}/metrics`);
