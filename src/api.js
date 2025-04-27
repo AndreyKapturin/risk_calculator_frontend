@@ -55,6 +55,26 @@ export const addMetricToObjectsGroup = async (objectsGroupId, metric) => {
   }
 }
 
+export const removeMetricFromObjectsGroup = async (objectsGroupId, metricId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/metrics/${metricId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      const removedMetric = await response.json();
+      return removedMetric;
+    } else {
+      const { message } = await response.json();
+      throw Error(message);
+    }
+
+  } catch (error) {
+    console.log('Update objects group error: ', error);
+    throw error;
+  }
+}
+
 export const getMetrics = async () => {
   try {
     const response = await fetch(`${BASE_URL}/metrics`);
