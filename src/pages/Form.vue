@@ -3,7 +3,6 @@
   import { computed, ref } from 'vue';
   import { useLoadData } from '../hooks/useLoadData.js';
   import { getObjectsGroupById } from '../api.js';
- 
   import { RISK_CATEGORIES, METRIC_TYPES } from '../constants.js';
 
   const getRiskCategory = (index) => {
@@ -70,7 +69,7 @@
           <Select :name="metric.type + '-' + index">
             <option
               v-for="indicator in metric.indicators"
-              :value="indicator.value">
+              :value="indicator.value ?? 0">
               {{ indicator.text }}
             </option>
           </Select>
