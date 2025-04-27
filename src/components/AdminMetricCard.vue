@@ -1,9 +1,20 @@
 <script setup>
   import { toast } from 'vue3-toastify';
   import { removeMetricFromObjectsGroup } from '../api';
+  import { ref } from 'vue';
+  import EditIndicatorsValuesForm from './EditIndicatorsValuesForm.vue';
 
   const props = defineProps(['metric', 'isEditMode', 'objectsGroupId']);
-  const emit = defineEmits(['removeMetric'])
+  const emit = defineEmits(['removeMetric', 'updateIndicatorsValues']);
+  const isEditIndicatorsMode = ref(false);
+  
+  const setEditIndicatorMode = () => {
+    isEditIndicatorsMode.value = true;
+  }
+  const cancelEditIndicatorMode = () => {
+    isEditIndicatorsMode.value = false;
+  }
+
   const handleRemoveMetric = async () => {
     try {
       const removedMetric = await removeMetricFromObjectsGroup(props.objectsGroupId, props.metric.id);
@@ -12,18 +23,35 @@
       toast(error.message, { type: 'error' });
     }
   }
+
+  const onUpdateIndicatorsValues = (updatedIndicatorsValues) => {
+    emit('updateIndicatorsValues', { metricId: props.metric.id, updatedIndicatorsValues });
+    cancelEditIndicatorMode();
+  }
 </script>
 
 <template>
   <div class="metric">
+
     <div v-if="isEditMode" class="metric__header">
       <p>{{ metric.name }}</p>
       <div class="control-buttons">
-        <Button @click="handleRemoveMetric">Удалить</Button>
+        <Button v-if="isEditIndicatorsMode" @click="cancelEditIndicatorMode">Отмена</Button>
+        <template v-else>
+          <Button @click="setEditIndicatorMode">Изменить</Button>
+          <Button @click="handleRemoveMetric">Удалить</Button>
+        </template>
       </div>
     </div>
+
     <p v-else class="metric__name">{{ metric.name }}</p>
-    <div class="indicator" v-for="indicator in metric.indicators">
+    <EditIndicatorsValuesForm
+      v-if="isEditIndicatorsMode"
+      :indicators="metric.indicators"
+      :objectsGroupId
+      @updateIndicatorsValues="onUpdateIndicatorsValues"
+    />
+    <div v-else class="indicator" v-for="indicator in metric.indicators">
       <p>{{ indicator.text }}</p>
       <p>{{ indicator.value }}</p>
     </div>
