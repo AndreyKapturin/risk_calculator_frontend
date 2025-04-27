@@ -6,6 +6,7 @@
   import { computed, ref } from 'vue';
   import EditObjectsGroupForm from './EditObjectsGroupForm.vue';
   import AddMetricForm from './AddMetricForm.vue';
+  import AdminMetricCard from './AdminMetricCard.vue';
 
   const route = useRoute();
   const objectsGroupId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
@@ -27,6 +28,10 @@
 
   const onAddMetric = (addedMetric) => {
     objectsGroup.value.metrics.push(addedMetric);
+  }
+
+  const onRemoveMetric = (removedMetric) => {
+    objectsGroup.value.metrics = objectsGroup.value.metrics.filter(m => m.id != removedMetric.id);
   }
 </script>
 
@@ -60,22 +65,9 @@
     <h2>Метрики:</h2>
     <AddMetricForm v-if="isEditMode" :metrics :objectsGroup @addMetric="onAddMetric" />
     <h3>Индикаторы риска:</h3>
-    <div class="metric" v-for="metric in riskIndicators" :key="metric.id">
-      <p class="metric__name">{{ metric.name }}</p>
-      <div class="indicator" v-for="indicator in metric.indicators">
-        <p>{{ indicator.text }}</p>
-        <p>{{ indicator.value }}</p>
-      </div>
-    </div>
-
+    <AdminMetricCard v-for="metric in riskIndicators" :key="metric.id" :metric :isEditMode :objectsGroupId @removeMetric="onRemoveMetric" />
     <h3>Критерии добросовестности:</h3>
-    <div class="metric" v-for="metric in goodFaithCriteries" :key="metric.id">
-      <p class="metric__name">{{ metric.name }}</p>
-      <div class="indicator" v-for="indicator in  metric.indicators">
-        <p>{{ indicator.text }}</p>
-        <p>{{ indicator.value }}</p>
-      </div>
-    </div>
+    <AdminMetricCard v-for="metric in goodFaithCriteries" :key="metric.id" :metric :isEditMode :objectsGroupId @removeMetric="onRemoveMetric" />
   </article>
 </template>
 
@@ -83,19 +75,12 @@
   h1 {
     font-size: 1.5rem;
   }
-  .objects-group, .metric {
+  .objects-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
   .objects-group__header {
-    display: flex;
-    justify-content: space-between;
-  }
-  .metric__name {
-    border-bottom: 1px solid rgb(128, 128, 128);
-  }
-  .indicator {
     display: flex;
     justify-content: space-between;
   }
