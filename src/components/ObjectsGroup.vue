@@ -33,6 +33,11 @@
   const onRemoveMetric = (removedMetric) => {
     objectsGroup.value.metrics = objectsGroup.value.metrics.filter(m => m.id != removedMetric.id);
   }
+
+  const onUpdateIndicatorsValues = ({ metricId, updatedIndicatorsValues }) => {
+    const metric = objectsGroup.value.metrics.find(m => m.id === metricId);
+    metric.indicators = updatedIndicatorsValues;
+  }
 </script>
 
 <template>
@@ -65,9 +70,25 @@
     <h2>Метрики:</h2>
     <AddMetricForm v-if="isEditMode" :metrics :objectsGroup @addMetric="onAddMetric" />
     <h3>Индикаторы риска:</h3>
-    <AdminMetricCard v-for="metric in riskIndicators" :key="metric.id" :metric :isEditMode :objectsGroupId @removeMetric="onRemoveMetric" />
+    <AdminMetricCard
+      v-for="metric in riskIndicators"
+      :key="metric.id"
+      :metric
+      :isEditMode
+      :objectsGroupId
+      @removeMetric="onRemoveMetric"
+      @updateIndicatorsValues="onUpdateIndicatorsValues"  
+    />
     <h3>Критерии добросовестности:</h3>
-    <AdminMetricCard v-for="metric in goodFaithCriteries" :key="metric.id" :metric :isEditMode :objectsGroupId @removeMetric="onRemoveMetric" />
+    <AdminMetricCard
+      v-for="metric in goodFaithCriteries"
+      :key="metric.id"
+      :metric
+      :isEditMode
+      :objectsGroupId
+      @removeMetric="onRemoveMetric"
+      @updateIndicatorsValues="onUpdateIndicatorsValues"  
+    />
   </article>
 </template>
 
