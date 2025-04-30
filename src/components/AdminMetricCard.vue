@@ -3,10 +3,13 @@
   import { removeMetricFromObjectsGroup } from '../api';
   import { ref } from 'vue';
   import EditIndicatorsValuesForm from './EditIndicatorsValuesForm.vue';
+  import Modal from '../ui/Modal.vue';
+  import Confirmation from '../ui/Confirmation.vue';
 
   const props = defineProps(['metric', 'isEditMode', 'objectsGroupId']);
   const emit = defineEmits(['removeMetric', 'updateIndicatorsValues']);
   const isEditIndicatorsMode = ref(false);
+  const isOpenModal = ref(false);
   
   const setEditIndicatorMode = () => {
     isEditIndicatorsMode.value = true;
@@ -39,7 +42,7 @@
         <Button v-if="isEditIndicatorsMode" @click="cancelEditIndicatorMode">Отмена</Button>
         <template v-else>
           <Button @click="setEditIndicatorMode">Изменить</Button>
-          <Button @click="handleRemoveMetric">Удалить</Button>
+          <Button @click="isOpenModal=true">Удалить</Button>
         </template>
       </div>
     </div>
@@ -56,6 +59,13 @@
       <p>{{ indicator.value }}</p>
     </div>
   </div>
+  <Modal :isOpenModal @closeModal="isOpenModal=false">
+    <Confirmation
+      question="Метрика будет убрана только для текущей группы объектов, а значения её индикаторов будут удалены. Продолжить?"
+      @confirm="handleRemoveMetric"
+      @cancel="isOpenModal=false"
+    />
+  </Modal>
 </template>
 
 <style scoped>
