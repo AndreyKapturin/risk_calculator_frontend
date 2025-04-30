@@ -8,6 +8,8 @@
   import { METRIC_TYPES_TRANSLATE } from '../constants.js';
   import { toast } from 'vue3-toastify';
   import AddIndicatorForm from './AddIndicatorForm.vue';
+  import Modal from '../ui/Modal.vue';
+  import Confirmation from '../ui/Confirmation.vue';
 
   const route = useRoute();
   const router = useRouter();
@@ -16,6 +18,7 @@
   const { data: metric, isLoading } = useLoadData(() => getMetricById(metricId));
   const metricType = computed(() => METRIC_TYPES_TRANSLATE[metric.value.type]);
   const isEditMode = ref(false);
+  const isOpenModal = ref(false);
 
   const onUpdateIndicatorText = (updatedIndicator) => {
     metric.value.indicators = metric.value.indicators.map(indicator => indicator.id == updatedIndicator.id ? updatedIndicator : indicator);
@@ -43,16 +46,11 @@
   }
 
   const handleMetricDelete = async () => {
-    // TODO: Заменить на кастомную модалку
-    const isConfimed = confirm('Метрика будет удалена полностью со всеми индикаторами и значениями для каждой группы объектоа. Продолжить?');
-
-    if (isConfimed) {
-      try {
-        await deleteMetric(metricId);
-        router.push('/admin/metrics');
-      } catch (error) {
-        toast(error.message, { type: 'error' });
-      }
+    try {
+      await deleteMetric(metricId);
+      router.push('/admin/metrics');
+    } catch (error) {
+      toast(error.message, { type: 'error' });
     }
   }
 </script>
@@ -67,7 +65,7 @@
       </template>
       <template v-else>
         <Button @click="setEditMode">Изменить</Button>
-        <Button @click="handleMetricDelete">Удалить</Button>
+        <Button @click="isOpenModal=true">Удалить</Button>
       </template>
     </div>
 
@@ -92,6 +90,14 @@
       />
     </article>
   </article>
+  
+  <Modal :isOpenModal @closeModal="isOpenModal=false">
+    <Confirmation
+      question="Метрика будет удалена полностью со всеми индикаторами и значениями для каждой группы объектоа. Продолжить?"
+      @confirm="handleMetricDelete"
+      @cancel="isOpenModal=false"  
+    />
+  </Modal>
 </template>
 
 <style scoped>

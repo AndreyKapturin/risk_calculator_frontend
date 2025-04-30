@@ -18,9 +18,6 @@
 
   const setEditMode = () => isEditMode.value = true;
   const cancelEditMode = () => isEditMode.value = false;
-  const handleDeleteObjectsGroup = () => {
-    console.log('Delete objects group');
-  }
 
   const onUpdateObjectsGroup = (updatedObjectsGroup) => {
     objectsGroup.value = updatedObjectsGroup;
@@ -47,13 +44,8 @@
       <h1>Группа объектов</h1>
       
       <div class="control-buttons">
-        <template v-if="isEditMode">
-          <Button @click="cancelEditMode">Закрыть</Button>
-        </template>
-        <template v-else>
-          <Button @click="setEditMode">Изменить</Button>
-          <Button @click="handleDeleteObjectsGroup">Удалить</Button>
-        </template>
+        <Button v-if="isEditMode" @click="cancelEditMode">Закрыть</Button>
+        <Button v-else @click="setEditMode">Изменить</Button>
       </div>
     </div>
 

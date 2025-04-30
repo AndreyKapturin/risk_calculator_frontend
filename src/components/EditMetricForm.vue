@@ -5,6 +5,7 @@
   import { METRIC_TYPES, METRIC_TYPES_TRANSLATE } from '../constants.js';
   import FormErrorMessage from '../ui/FormErrorMessage.vue';
   import Joi from 'joi';
+  import { toast } from 'vue3-toastify';
 
   const props = defineProps(['metric']);
   const emit = defineEmits((['updateMetric']))
@@ -40,7 +41,7 @@
       const updatedMetric = await updateMetric(props.metric.id, value);
       emit('updateMetric', updatedMetric);
     } catch (error) {
-      console.log(error);
+      toast(error.message, { type: 'error' });
     }
   }
 </script>
