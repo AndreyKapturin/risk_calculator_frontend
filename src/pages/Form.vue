@@ -118,13 +118,17 @@
       <Button>Рассчитать</Button>
     </form>
 
-    <article v-if="result">
+    <article v-if="result" class="result">
       <h2>Результаты:</h2>
-      <p>∑ Iкрд = {{ result.goodFaithCriteriesValuesSum }}</p>
-      <p>∑ Iрпв = {{ result.riskIndicatorsValuesSum }}</p>
-      <p>Uинд =∑ Iрпв+∑ Iкрд= {{result.individualizationIndex }}</p>
-      <p>Кг.т.инд.= Uинд+Кгт = {{ result.potencialDamageScore}}</p>
-      <p>Категория риска объекта = {{ result.riskCategory }}</p>
+      <p><b>Сумма значений индикаторов риска:</b></p>
+      <p>∑ I<sub>рпв</sub> = {{ result.riskIndicatorsValuesSum }}</p>
+      <p><b>Сумма значений критиериев добросовестности:</b></p>
+      <p>∑ I<sub>крд</sub> = {{ result.goodFaithCriteriesValuesSum }}</p>
+      <p><b>Индекс индивидуализации подконтрольного лица:</b></p>
+      <p>U<sub>инд</sub> = {{result.individualizationIndex }}</p>
+      <p><b>Показатель тяжести потенциальных негативных последствий пожара с учетом индекса индивидуализации подконтрольного лица:</b></p>
+      <p>К<sub>Г.Т.М.инд.</sub>= {{ result.potencialDamageScore}}</p>
+      <p>Категория риска объекта - {{ result.riskCategory }}</p>
     </article>
 
   </section>
@@ -136,7 +140,8 @@
     flex-direction: column;
     gap: 20px;
   }
-  .indicators-form {
+  .indicators-form,
+  .result {
     display: flex;
     flex-direction: column;
     gap: 10px;
