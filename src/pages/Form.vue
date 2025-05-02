@@ -3,16 +3,9 @@
   import { computed, ref } from 'vue';
   import { useLoadData } from '../hooks/useLoadData.js';
   import { getObjectsGroupById } from '../api.js';
-  import { RISK_CATEGORIES, METRIC_TYPES } from '../constants.js';
-
-  const getRiskCategory = (index) => {
-    if (index >= 100) return RISK_CATEGORIES.EXTREMELY_HIGH;
-    if (index >= 45) return RISK_CATEGORIES.HIGH;
-    if (index >= 20) return RISK_CATEGORIES.SIGNIFICANT;
-    if (index >= 9) return RISK_CATEGORIES.AVERAGE;
-    if (index >= 4) return RISK_CATEGORIES.MODERATE;
-    return RISK_CATEGORIES.LOW;
-  }
+  import { METRIC_TYPES } from '../constants.js';
+  import { calcRisk } from '../features/calclulateRiskCategory.js';
+  import { toast } from 'vue3-toastify';
 
   const route = useRoute();
   const id = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
@@ -22,46 +15,78 @@
   const goodFaithCriteries = computed(() => objectsGroup.value?.metrics?.filter(m => m.type === METRIC_TYPES.GOOD_FAITH_CRITERIA));
   const result = ref(null);
 
-  
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const parseFormData = (formData) => {
+    const objectInfo = {
+      riskIndicatorsValues: [],
+      goodFaithCriteriesValues: [],
+      socialDamagePotencialScore: objectsGroup.value.socialDamagePotencialScore,
+      materialDamagePotencialScore: objectsGroup.value.materialDamagePotencialScore
+    };
 
-    let totalRiskIndicator = 0;
-    let totalGoodFaithCriteries = 0;
-
-    const formData = new FormData(event.target);
-    
     for (const [key, value] of formData) {
       if (key.startsWith(METRIC_TYPES.RISK_INDICATOR)) {
-        totalRiskIndicator += Number(value);
+        objectInfo.riskIndicatorsValues.push(Number(value));
       }
       if (key.startsWith(METRIC_TYPES.GOOD_FAITH_CRITERIA)) {
-        totalGoodFaithCriteries += Number(value);
+        objectInfo.goodFaithCriteriesValues.push(Number(value));
+      }
+      if (key === 'isGovernmentOwnership') {
+        objectInfo.isGovernmentOwnership = value === '1'
+      }
+      if (key === 'hasSeveralControlledPersons') {
+        objectInfo.hasSeveralControlledPersons = value === '1'
       }
     }
 
-    const individualizationIndex = totalRiskIndicator + totalGoodFaithCriteries
-    const individualizedPotentialDamageIndex = individualizationIndex + (objectsGroup?.value?.socialDamagePotencialScore ?? 0);
-    const riskCategory = getRiskCategory(individualizedPotentialDamageIndex)
-    
-    result.value = {
-      totalRiskIndicator,
-      totalGoodFaithCriteries,
-      individualizationIndex,
-      individualizedPotentialDamageIndex,
-      riskCategory
-    }
+    return objectInfo;
   }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const objectInfo = parseFormData(formData);
+
+    if (objectInfo.isGovernmentOwnership === undefined) {
+      toast('Выберите форму собственности объекта', { type: 'error' });
+      return;
+    }
+
+    if (objectInfo.hasSeveralControlledPersons === undefined) {
+      toast('Укажите количество контролируемых лиц на объекте зашиты', { type: 'error' });
+      return;
+    }
+
+    result.value = calcRisk(objectInfo);
+  }
+
 </script>
 
 <template>
   <Loading v-if="isLoading" />
+  
   <div v-else-if="error">
     <p>Ошибка при загрузке данных. Попробуйте позже</p>
   </div>
   <section v-else class="form-page">
     <h1>{{ objectsGroup.name }}</h1>
+
     <form @submit="handleSubmit" class="indicators-form">
+      <h3>Общая информация</h3>
+      <Label>
+        Объект защиты находится в государственной или муниципальной собственности?
+        <Select name="isGovernmentOwnership" ref="governmentOwnershipSelect">
+          <option value="1">Да</option>
+          <option value="0">Нет</option>
+        </Select>
+      </Label>
+      <Label>
+        На объекте защиты осуществляют экономическую деятельность более одного контролируемого лица?
+        <Select name="hasSeveralControlledPersons">
+          <option value="1">Да</option>
+          <option value="0">Нет</option>
+        </Select>
+      </Label>
+
       <h3>Индикаторы риска</h3>
       <template v-for="(metric, index) in riskIndicators">
         <Label>
@@ -75,6 +100,7 @@
           </Select>
         </Label>
       </template>
+
       <h3>Критерии добросовестности</h3>
        <template v-for="(metric, index) in goodFaithCriteries">
         <Label>
@@ -88,16 +114,19 @@
           </Select>
         </Label>
       </template>
-      <Button class="button" type="submit">Рассчитать</Button>
+
+      <Button>Рассчитать</Button>
     </form>
+
     <article v-if="result">
       <h2>Результаты:</h2>
-      <p>∑ Iкрд = {{ result.totalGoodFaithCriteries }}</p>
-      <p>∑ Iрпв = {{ result.totalRiskIndicator }}</p>
+      <p>∑ Iкрд = {{ result.goodFaithCriteriesValuesSum }}</p>
+      <p>∑ Iрпв = {{ result.riskIndicatorsValuesSum }}</p>
       <p>Uинд =∑ Iрпв+∑ Iкрд= {{result.individualizationIndex }}</p>
-      <p>Кг.т.инд.= Uинд+Кгт = {{ result.individualizedPotentialDamageIndex}}</p>
+      <p>Кг.т.инд.= Uинд+Кгт = {{ result.potencialDamageScore}}</p>
       <p>Категория риска объекта = {{ result.riskCategory }}</p>
     </article>
+
   </section>
 </template>
 
@@ -107,23 +136,9 @@
     flex-direction: column;
     gap: 20px;
   }
-
   .indicators-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  .button {
-    padding: 10px 5px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
-  }
-  
-  .button:hover {
-    background-color: var(--secondary-color);
   }
 </style>
