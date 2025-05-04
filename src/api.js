@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000/api-v1';
+const BASE_URL = import.meta.env.VITE_BASE_API_URL;
 
 export const getObjectsGroupsList = async () => {
   try {
