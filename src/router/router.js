@@ -7,6 +7,7 @@ import MetricsList from '../components/MetricsList.vue';
 import MetricCard from '../components/MetricCard.vue';
 import ObjectsGroupsList from '../components/ObjectsGroupsList.vue';
 import ObjectsGroup from '../components/ObjectsGroup.vue';
+import NotFoundPage from '../pages/NotFoundPage.vue';
 
 const routes = [
   { path: '/', component: Main },
@@ -43,6 +44,7 @@ const routes = [
       ]
     }
   ]},
+  { path: '/:pathMatch(.*)*', component: NotFoundPage }
 ]
 
 const router = createRouter({
