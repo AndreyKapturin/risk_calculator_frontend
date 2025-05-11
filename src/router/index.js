@@ -8,11 +8,19 @@ import MetricCard from '../components/MetricCard.vue';
 import ObjectsGroupsList from '../components/ObjectsGroupsList.vue';
 import ObjectsGroup from '../components/ObjectsGroup.vue';
 import NotFoundPage from '../pages/NotFoundPage.vue';
+import Login from '../pages/Login.vue';
 
 const routes = [
   { path: '/', component: Main },
   { path: '/objects-groups/:id', component: Form },
-  { path: '/admin', component: Admin, children: [
+  { path: '/login', component: Login },
+  { path:
+    '/admin',
+    component: Admin,
+    meta: {
+      requiresAuth: true
+    },
+    children: [
     {
       path: 'metrics',
       children: [
@@ -53,6 +61,15 @@ const router = createRouter({
   matchOptions: {
     exact: false,
     strict: false
+  }
+})
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('accessToken');
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login');
+  } else {
+    next();
   }
 })
 

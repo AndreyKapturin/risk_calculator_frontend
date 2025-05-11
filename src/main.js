@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 import './style.css';
 import 'vue3-toastify/dist/index.css';
+import router from './router';
 import App from './App.vue';
-import router from './router/router';
 import Button from './ui/Button.vue';
 import Select from './ui/Select.vue';
 import Label from './ui/Label.vue';

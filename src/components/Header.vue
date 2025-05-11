@@ -18,7 +18,7 @@
   .link {
     text-decoration: none;
     color: var(--text-color);
-    font-size: clamp(1.5rem, 5vw ,2rem);
+    font-size: clamp(1.25rem, 5vw ,2rem);
     font-weight: 700;
   }
 </style>
