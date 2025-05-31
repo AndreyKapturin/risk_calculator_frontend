@@ -91,7 +91,7 @@
       <template v-for="(metric, index) in riskIndicators">
         <Label>
           {{ metric.name }}
-          <Select :name="metric.type + '-' + index">
+          <Select :name="metric.type + '-' + index" required>
             <option
               v-for="indicator in metric.indicators"
               :value="indicator.value ?? 0">
@@ -105,7 +105,7 @@
        <template v-for="(metric, index) in goodFaithCriteries">
         <Label>
           {{ metric.name }}
-          <Select :name="metric.type + '-' + index">
+          <Select :name="metric.type + '-' + index" required>
             <option
               v-for="indicator in metric.indicators"
               :value="indicator.value">
@@ -122,7 +122,7 @@
       <h2>Результаты:</h2>
       <p><b>Сумма значений индикаторов риска:</b></p>
       <p>∑ I<sub>рпв</sub> = {{ result.riskIndicatorsValuesSum }}</p>
-      <p><b>Сумма значений критиериев добросовестности:</b></p>
+      <p><b>Сумма значений критериев добросовестности:</b></p>
       <p>∑ I<sub>крд</sub> = {{ result.goodFaithCriteriesValuesSum }}</p>
       <p><b>Индекс индивидуализации подконтрольного лица:</b></p>
       <p>U<sub>инд</sub> = {{result.individualizationIndex }}</p>
