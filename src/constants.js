@@ -16,3 +16,4 @@ export const METRIC_TYPES_TRANSLATE = {
   [METRIC_TYPES.RISK_INDICATOR]: 'Индикатор риска',
   [METRIC_TYPES.GOOD_FAITH_CRITERIA]: 'Критерий добросовестности',
 }
+export const BASE_URL = import.meta.env.VITE_BASE_API_URL;

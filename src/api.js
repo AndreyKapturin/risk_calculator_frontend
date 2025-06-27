@@ -1,9 +1,42 @@
-const BASE_URL = 'http://localhost:3000/api-v1';
+import { BASE_URL } from "./constants";
+const getAuthorizationHeader = () => `Bearer ${localStorage.getItem('accessToken')}`;
+
+const handleResponse = async (response) => {
+  if (response.status === 401) {
+    localStorage.removeItem('accessToken');
+    window.location.reload();
+  }
+  
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  } else {
+    const error = await response.json();
+    throw new Error(error.message);
+  }
+}
+
+export const authenticate = async (userData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/users/authenticate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user: userData }),
+    });    
+    const authData = await handleResponse(response);
+    return authData;
+  } catch (error) {
+    console.log('Authenticate error: ', error);
+    throw error;
+  }
+}
 
 export const getObjectsGroupsList = async () => {
   try {
     const response = await fetch(`${BASE_URL}/objects-groups`);
-    const objectsGroups = await response.json();
+    const objectsGroups = await handleResponse(response);
     return objectsGroups;
   } catch (error) {
     console.log('Fetch objects groups error: ', error);
@@ -14,7 +47,7 @@ export const getObjectsGroupsList = async () => {
 export const getObjectsGroupById = async (id) => {
   try {
     const response = await fetch(`${BASE_URL}/objects-groups/${id}`);
-    const metrics = await response.json();
+    const metrics = await handleResponse(response);
     return metrics;
   } catch (error) {
     console.log('Fetch metrics: ', error);
@@ -27,11 +60,12 @@ export const updateObjectsGroup = async (id, objectsGroup) => {
     const response = await fetch(`${BASE_URL}/objects-groups/${id}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ objectsGroup }),
     });
-    const updatedObjectsGroup = await response.json();
+    const updatedObjectsGroup = await handleResponse(response);
     return updatedObjectsGroup;
   } catch (error) {
     console.log('Update objects group error: ', error);
@@ -41,13 +75,15 @@ export const updateObjectsGroup = async (id, objectsGroup) => {
 
 export const addMetricToObjectsGroup = async (objectsGroupId, metric) => {
   try {
-    await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/metrics`, {
+    const response = await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/metrics`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ metric }),
     });
+    await handleResponse(response);
     return metric;
   } catch (error) {
     console.log('Update objects group error: ', error);
@@ -59,16 +95,12 @@ export const removeMetricFromObjectsGroup = async (objectsGroupId, metricId) => 
   try {
     const response = await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/metrics/${metricId}`, {
       method: 'DELETE',
+      headers: {
+        authorization: getAuthorizationHeader(),
+      }
     });
-
-    if (response.ok) {
-      const removedMetric = await response.json();
-      return removedMetric;
-    } else {
-      const { message } = await response.json();
-      throw Error(message);
-    }
-
+    const removedMetric = await handleResponse(response)
+    return removedMetric;
   } catch (error) {
     console.log('Update objects group error: ', error);
     throw error;
@@ -80,19 +112,14 @@ export const updateIndicatorsValues = async (objectsGroupId, indicators) => {
     const response = await fetch(`${BASE_URL}/objects-groups/${objectsGroupId}/values`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ indicators }),
     });
 
-    if (response.ok) {
-      const updatedIndicators = await response.json();
-      return updatedIndicators;
-    } else {
-      const { message } = await response.json();
-      throw Error(message);
-    }
-
+    const updatedIndicators = await handleResponse(response);
+    return updatedIndicators;
   } catch (error) {
     console.log('Update objects group error: ', error);
     throw error;
@@ -102,7 +129,7 @@ export const updateIndicatorsValues = async (objectsGroupId, indicators) => {
 export const getMetrics = async () => {
   try {
     const response = await fetch(`${BASE_URL}/metrics`);
-    const metrics = await response.json();
+    const metrics = await handleResponse(response);
     return metrics;
   } catch (error) {
     console.log('Fetch metrics: ', error);
@@ -113,7 +140,7 @@ export const getMetrics = async () => {
 export const getMetricById = async (metricId) => {
   try {
     const response = await fetch(`${BASE_URL}/metrics/${metricId}`);
-    const metric = await response.json();
+    const metric = await handleResponse(response);
     return metric;
   } catch (error) {
     console.log('Fetch metric error', error);
@@ -126,11 +153,12 @@ export const createMetric = async (metric) => {
     const response = await fetch(`${BASE_URL}/metrics`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ metric }),
     });
-    const createdMetric = await response.json();
+    const createdMetric = await handleResponse(response);
     return createdMetric;
   } catch (error) {
     console.log('Create metric error: ', error);
@@ -140,15 +168,16 @@ export const createMetric = async (metric) => {
 
 export const updateMetricIndicatorText = async (indicatorId, indicator) => {
   try {
-    await fetch(`${BASE_URL}/indicators/${indicatorId}`, {
+    const response = await fetch(`${BASE_URL}/indicators/${indicatorId}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ indicator }),
     });
-    
-    return {id: indicatorId, text: indicator.text};
+    await handleResponse(response);
+    return { id: indicatorId, text: indicator.text };
   } catch (error) {
     console.log('Create metric error: ', error);
     throw error;
@@ -157,10 +186,13 @@ export const updateMetricIndicatorText = async (indicatorId, indicator) => {
 
 export const deleteIndicator = async (indicatorId) => {
   try {
-    await fetch(`${BASE_URL}/indicators/${indicatorId}`, {
+    const response = await fetch(`${BASE_URL}/indicators/${indicatorId}`, {
       method: 'DELETE',
+      headers: {
+        authorization: getAuthorizationHeader(),
+      }
     });
-    
+    await handleResponse(response);
     return { id: indicatorId };
   } catch (error) {
     console.log('Create metric error: ', error);
@@ -174,10 +206,11 @@ export const updateMetric = async (metricId, data) => {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ metric: data })
     });
-    const updatedMetric = await response.json();
+    const updatedMetric = await handleResponse(response);
     return updatedMetric;
   } catch (error) {
     console.log('Update metric error: ', error);
@@ -187,8 +220,14 @@ export const updateMetric = async (metricId, data) => {
 
 export const deleteMetric = async (metricId) => {
   try {
-    const response = await fetch(`${BASE_URL}/metrics/${metricId}`, { method: 'DELETE' });
-    return response.ok
+    const response = await fetch(`${BASE_URL}/metrics/${metricId}`, {
+      method: 'DELETE',
+      headers: {
+        authorization: getAuthorizationHeader(),
+      }
+    });
+    await handleResponse(response);
+    return true;
   } catch (error) {
     console.log('Create metric error: ', error);
     throw error;
@@ -200,11 +239,12 @@ export const addIndicator = async (metricId, indicator) => {
     const response = await fetch(`${BASE_URL}/metrics/${metricId}/indicators`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: getAuthorizationHeader(),
       },
       body: JSON.stringify({ indicator }),
     });
-    const createdIndicator = await response.json();
+    const createdIndicator = await handleResponse(response);
     return createdIndicator;
   } catch (error) {
     console.log('Add indicator in metric error: ', error);
